@@ -81,6 +81,8 @@ mod source_build {
             let env = std::env::var("CARGO_CFG_TARGET_ENV").unwrap();
 
             let family = match family.as_str() {
+                // Emscripten reports "unix,wasm".
+                f if f.split(',').any(|x| x == "wasm") => TargetFamily::Wasm,
                 "unix" => TargetFamily::Unix,
                 "windows" => TargetFamily::Windows,
                 "wasm" => TargetFamily::Wasm,
@@ -96,6 +98,8 @@ mod source_build {
                 "dragonfly" => TargetOs::Dragonfly,
                 "openbsd" => TargetOs::Openbsd,
                 "netbsd" => TargetOs::Netbsd,
+                // Emscripten's libc and toolchain follow the Linux build.
+                "emscripten" => TargetOs::Linux,
                 _ => panic!("Unknown target os: {os}"),
             };
             let arch = match arch.as_str() {
